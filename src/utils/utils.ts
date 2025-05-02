@@ -1,5 +1,7 @@
 import { toast } from 'react-toastify';
+import { RiskyLevel } from 'src/const/RiskyConst';
 import { ToastStatus } from 'src/models/basic';
+import { SettingType } from 'src/models/tipOption';
 
 export const getToken = () => {
   const token = localStorage.getItem('token');
@@ -96,4 +98,16 @@ export const getTimeAgo = (
   }
 
   return { a: '', b: 'just now' };
+};
+
+export const getRiskLevel = (odd: number, settings: SettingType) => {
+  if (odd < settings.lowRisk) {
+    return RiskyLevel.Low;
+  } else if (odd >= settings.lowRisk && odd < settings.mediumRisk) {
+    return RiskyLevel.Medium;
+  } else if (odd >= settings.mediumRisk && odd < settings.highRisk) {
+    return RiskyLevel.High;
+  } else {
+    return RiskyLevel.NonRisky;
+  }
 };

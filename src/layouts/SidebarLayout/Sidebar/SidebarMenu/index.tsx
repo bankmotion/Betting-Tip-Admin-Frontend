@@ -266,6 +266,17 @@ function SidebarMenu() {
                   Teams
                 </Button>
               </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/matches"
+                  startIcon={<SportsTennisIcon />}
+                >
+                  Matches
+                </Button>
+              </ListItem>
               {/* <ListItem component="div">
                 <Button
                   disableRipple
@@ -306,10 +317,10 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/kitchen"
+                  to="/tip-options"
                   startIcon={<KitchenIcon />}
                 >
-                  Tips
+                  Tip Options
                 </Button>
               </ListItem>
               <ListItem component="div">
@@ -317,7 +328,7 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/buffet"
+                  to="/filtered-tips"
                   startIcon={<ChairAltIcon />}
                 >
                   Filtered Tips
@@ -328,7 +339,7 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/delivery"
+                  to="/publish-tips"
                   startIcon={<RoomServiceIcon />}
                 >
                   Publish Tips
@@ -339,10 +350,33 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/kitchenlog"
+                  to="/tip-results"
                   startIcon={<HistoryToggleOffIcon />}
                 >
                   Tip results
+                </Button>
+              </ListItem>
+            </List>
+          </SubMenuWrapper>
+        </List>
+        <List
+          component="div"
+          subheader={
+            <ListSubheader component="div" disableSticky>
+              Management
+            </ListSubheader>
+          }
+        >
+          <SubMenuWrapper>
+            <List component="div">
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/logging"
+                >
+                  Logging
                 </Button>
               </ListItem>
             </List>

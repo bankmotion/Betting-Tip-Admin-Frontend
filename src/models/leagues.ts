@@ -7,6 +7,7 @@ export interface LeagueType {
   season: number;
   type: string;
   logo: string;
+  isActive: boolean;
   country: CountryType;
   createdAt: string;
   updatedAt: string;

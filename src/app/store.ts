@@ -6,14 +6,17 @@ import countriesSlice from '../reducers/countries.slice';
 import leaguesSlice from '../reducers/leagues.slice';
 import teamsSlice from '../reducers/teams.slice';
 import { checkAuthMiddleware } from '../middleware/CheckAuth';
-
+import matchesSlice from '../reducers/matches.slice';
+import tipSettingSlice from '../reducers/tipSetting.slice';
 export const store = configureStore({
   reducer: {
     user: userSlice,
     allergenes: allergenesSlice,
     countries: countriesSlice,
     leagues: leaguesSlice,
-    teams: teamsSlice
+    teams: teamsSlice,
+    matches: matchesSlice,
+    tipSetting: tipSettingSlice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(checkAuthMiddleware)

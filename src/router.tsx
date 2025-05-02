@@ -7,7 +7,7 @@ import BaseLayout from 'src/layouts/BaseLayout';
 import SuspenseLoader from 'src/components/SuspenseLoader';
 import ProtectedRoute from './ProtectedRoute';
 import { useAuth } from './middleware/AuthContext';
-
+import FilteredTips from 'src/pages/FilteredTips/FilteredTipsIndex';
 const Loader = (Component) => (props) =>
   (
     <Suspense fallback={<SuspenseLoader />}>
@@ -30,6 +30,10 @@ const Countries = Loader(
 const Leagues = Loader(lazy(() => import('src/pages/Leagues/LeaguesIndex')));
 
 const Teams = Loader(lazy(() => import('src/pages/Teams/TeamsIndex')));
+
+const Matches = Loader(lazy(() => import('src/pages/Matches/MatchesIndex')));
+
+const TipOptions = Loader(lazy(() => import('src/pages/TipOptions/TipOptionsIndex')));
 
 // Dashboards
 
@@ -131,6 +135,18 @@ const routes: RouteObject[] = [
       {
         path: 'teams',
         element: <Teams />
+      },
+      {
+        path: 'matches',
+        element: <Matches />
+      },
+      {
+        path: 'tip-options',
+        element: <TipOptions />
+      },
+      {
+        path: 'filtered-tips',
+        element: <FilteredTips />
       }
     ]
   },

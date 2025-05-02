@@ -1,6 +1,8 @@
 import {
+  Badge,
   Box,
   Card,
+  Chip,
   CircularProgress,
   Divider,
   IconButton,
@@ -33,20 +35,26 @@ import {
   updateLeagueDataAction
 } from 'src/reducers/leagues.slice';
 import { ToastStatus } from 'src/models/basic';
+import { MatchStatus } from 'src/const/MatchConst';
 
 const FlagImage = styled('img')(({ theme }) => ({
-  width: 25,
-  height: 'auto'
+  width: 20
 }));
 
-const LeaguesTable = () => {
+const MatchesTable = ({
+  onOpenOddModal,
+  onSetTargetMatchId
+}: {
+  onOpenOddModal: (open: boolean) => void;
+  onSetTargetMatchId: (id: number) => void;
+}) => {
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(10);
 
   const dispatch = useAppDispatch();
 
-  const { leaguesList, loadingGetList } = useAppSelector(
-    (state) => state.leagues
+  const { matchesList, loadingGetList } = useAppSelector(
+    (state) => state.matches
   );
 
   const handlePageChange = (event: any, newPage: number): void => {
@@ -57,22 +65,8 @@ const LeaguesTable = () => {
     setLimit(parseInt(event.target.value));
   };
 
-  const paginatedLeagues = applyPagination(leaguesList, page, limit);
+  const paginatedMatches = applyPagination(matchesList, page, limit);
   const theme = useTheme();
-
-  const handleToggleActive = (leagueId: number) => {
-    const league = leaguesList.find((league) => league.id === leagueId);
-    if (league) {
-      dispatch(
-        updateLeagueDataAction({ ...league, isActive: !league.isActive })
-      )
-        .unwrap()
-        .then(() => {
-          toastMsg('League updated successfully', ToastStatus.Success);
-          dispatch(getLeaguesAction());
-        });
-    }
-  };
 
   return (
     <Card>
@@ -81,12 +75,12 @@ const LeaguesTable = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>League ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Season</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Country</TableCell>
-              <TableCell>Active</TableCell>
+              <TableCell>ID</TableCell>
+              <TableCell>League</TableCell>
+              <TableCell>Home Team</TableCell>
+              <TableCell>Away Team</TableCell>
+              <TableCell>Date</TableCell>
+              <TableCell>Match Status</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -114,41 +108,79 @@ const LeaguesTable = () => {
                 </Box>
               </Box>
             ) : (
-              paginatedLeagues.map((league) => {
+              paginatedMatches.map((match) => {
                 return (
-                  <TableRow hover key={league.id}>
-                    <TableCell>{league.leagueId}</TableCell>
+                  <TableRow hover key={match.id}>
                     <TableCell>
-                      <Box display="flex" alignItems="center" gap={1}>
-                        {league?.logo && <FlagImage src={`${league.logo}`} />}
-                        {league.name}
-                      </Box>
-                    </TableCell>
-                    <TableCell>{league.season}</TableCell>
-                    <TableCell>{league.type}</TableCell>
-                    <TableCell>
-                      <Box display="flex" alignItems="center" gap={1}>
-                        {league?.country?.flag && (
-                          <FlagImage src={`${league.country.flag}`} />
-                        )}{' '}
-                        {league.country.name}
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <ToggleButton
-                        sx={{
-                          padding: '4px',
-                          borderRadius: '4px'
-                        }}
-                        value="check"
-                        selected={league.isActive}
-                        onChange={() => handleToggleActive(league.id)}
+                      <Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
                       >
-                        {league.isActive ? <CheckIcon /> : <CloseIcon />}
-                      </ToggleButton>
+                        {match.fixtureId}
+                      </Typography>
                     </TableCell>
-                    <TableCell align="right">
-                      {/* <Tooltip title="Edit allergen" arrow>
+                    <TableCell>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}
+                      >
+                        {match.league.logo && (
+                          <FlagImage src={`${match.league.logo}`} />
+                        )}
+                        {match.league.name}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}
+                      >
+                        {match.homeTeam.logo && (
+                          <FlagImage src={`${match.homeTeam.logo}`} />
+                        )}
+                        {match.homeTeam.name}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}
+                      >
+                        {match.awayTeam.logo && (
+                          <FlagImage src={`${match.awayTeam.logo}`} />
+                        )}
+                        {match.awayTeam.name}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      {new Date(match.matchTimestamp * 1000).toLocaleString()}
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        color={
+                          match.matchStatus === MatchStatus.Upcoming
+                            ? 'warning'
+                            : match.matchStatus === MatchStatus.Live
+                            ? 'success'
+                            : 'error'
+                        }
+                        label={match.matchStatus}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Tooltip title="See odd details" arrow>
                         <IconButton
                           sx={{
                             '&:hover': {
@@ -159,14 +191,14 @@ const LeaguesTable = () => {
                           color="inherit"
                           size="small"
                           onClick={() => {
-                            setTargetItem(country.id);
-                            handleOpenCreateModal();
+                            onOpenOddModal(true);
+                            onSetTargetMatchId(match.id);
                           }}
                         >
                           <EditTwoToneIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip title="Delete allergen" arrow>
+                      {/* <Tooltip title="Delete allergen" arrow>
                         <IconButton
                           sx={{
                             '&:hover': {
@@ -195,7 +227,7 @@ const LeaguesTable = () => {
       <Box p={2}>
         <TablePagination
           component="div"
-          count={leaguesList.length}
+          count={matchesList.length}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleLimitChange}
           page={page}
@@ -207,4 +239,4 @@ const LeaguesTable = () => {
   );
 };
 
-export default LeaguesTable;
+export default MatchesTable;

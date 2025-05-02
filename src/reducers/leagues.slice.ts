@@ -31,6 +31,27 @@ export const getLeaguesAction = createAsyncThunk(
   }
 );
 
+export const updateLeagueDataAction = createAsyncThunk(
+  'leagues/update',
+  async (data: LeagueType, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${SERVER_URL}/leagues/${data.id}`,
+        data,
+        {
+          headers: {
+            Authorization: getToken()
+          }
+        }
+      );
+
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
 export const leaguesSlice = createSlice({
   name: 'leagues',
   initialState,
